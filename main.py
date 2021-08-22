@@ -1,18 +1,23 @@
-# This is a sample Python script.
+"""
+main module
+"""
+from __future__ import annotations
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from typing import Sequence
+
+from modules.Math import is_prime
 
 
 def main() -> None:
     """
     メインプログラム
     """
-    pass
+    precision: int = 4
+    max_number: int = 100
+
+    primes: Sequence[int] = [m for m in range(max_number) if is_prime(m, precision)]
+    print(primes)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
