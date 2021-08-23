@@ -39,5 +39,6 @@ def main() -> None:
     doubles: Generator[int, None, Any] = double()
     print(list(takewhile(lambda x: x < 100, doubles)))
 
+
 if __name__ == '__main__':
     main()

@@ -52,6 +52,13 @@ def stream_reference(stream: Iterable[T], nth: int) -> T:
         element(T)
     """
     def index_predicate(indexed_element: tuple[int, Any]):
+        """
+        index predicate
+        Args:
+            indexed_element(tuple[int, Any]): indexed
+        Returns:
+
+        """
         index, _ = indexed_element
         return index < nth + 1
 
