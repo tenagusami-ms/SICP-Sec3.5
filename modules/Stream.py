@@ -129,3 +129,5 @@ def double() -> Generator[int, None, Any]:
     """
     yield 1
     yield from (2 * i for i in double())
+
+

@@ -17,7 +17,6 @@ def main() -> None:
     """
     precision: int = 4
     max_number: int = 100
-
     primes: Sequence[int] = [m for m in range(max_number) if is_prime(m, precision)]
     print(primes)
 
