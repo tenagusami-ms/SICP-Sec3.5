@@ -34,13 +34,13 @@ def power(x, y, p):
             res = (res * x) % p
 
         # y must be even now
-        y = y >> 1  # y = y/2
+        y >>= 1  # y = y/2
         x = (x * x) % p
 
     return res
 
 
-def miiller_test(d, n):
+def miller_test(d, n):
     """
     This function is call
     for all k trials. It
@@ -115,7 +115,7 @@ def is_prime(n, k):
 
     # Iterate given number of 'k' times
     for i in range(k):
-        if not miiller_test(d, n):
+        if not miller_test(d, n):
             return False
 
     return True
