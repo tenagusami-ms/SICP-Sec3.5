@@ -3,12 +3,31 @@ stream module
 """
 from __future__ import annotations
 
+import dataclasses
 import sys
 from itertools import count, takewhile, repeat, accumulate, chain
-from typing import Iterable, TypeVar, Any, Generator, Iterator, Callable
+from typing import Iterable, TypeVar, Any, Generator, Iterator, Callable, Generic
 
 T = TypeVar("T")
 sys.setrecursionlimit(1000)
+
+
+@dataclasses.dataclass
+class MemoizedInfiniteSequence(Generic[T]):
+    """
+    メモ化された無限リスト
+    """
+    values: list[T]
+    iterator: Iterator[T]
+
+
+@dataclasses.dataclass
+class Stream(Generic[T]):
+    """
+    ストリーム
+    """
+    current_index: int  # 現在のカーソル位置
+    values: MemoizedInfiniteSequence[T]  # メモ化された値リストとイテレータの組
 
 
 def integers_starting_from(n: int) -> Iterator[int]:
