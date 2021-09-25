@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import dataclasses
 import sys
-from itertools import count, takewhile, repeat, accumulate, chain
+from itertools import count, takewhile, repeat, accumulate, chain, islice
 from typing import Iterable, TypeVar, Any, Generator, Iterator, Callable, Generic
 
 T = TypeVar("T")
@@ -20,14 +20,28 @@ class MemoizedInfiniteSequence(Generic[T]):
     values: list[T]
     iterator: Iterator[T]
 
+    def value(self, index: int) -> T:
+        if index < len(self.values):
+            return self.values[index]
+        self.values += list(islice(self.iterator, index - len(self.values) + 1))
+        return self.value(index)
+
 
 @dataclasses.dataclass
 class Stream(Generic[T]):
     """
     ストリーム
     """
-    current_index: int  # 現在のカーソル位置
     values: MemoizedInfiniteSequence[T]  # メモ化された値リストとイテレータの組
+    current_index: int = 0  # 現在のカーソル位置
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        current_value: T = self.values.value(self.current_index)
+        self.current_index += 1
+        return current_value
 
 
 def integers_starting_from(n: int) -> Iterator[int]:
