@@ -146,7 +146,7 @@ def add_2streams(s1: Iterable[T], s2: Iterable[T]) -> Iterator[T]:
     exercise 3.54-1
     """
     yield next(iter(s1)) + next(iter(s2))
-    yield from multiply_streams(s1, s2)
+    yield from add_2streams(s1, s2)
 
 
 def add_streams(*streams) -> Iterator[T]:
@@ -274,7 +274,7 @@ def multiply_series(s0: Iterator[float], s1: Iterator[float]) -> Iterator[float]
     v0: float = next(iter(s0))
     v1: float = next(iter(s1))
     yield v0 * v1
-    yield from add_series(scale_streams(s1, v0), scale_streams(s0, v1), multiply_streams(s0, s1))
+    yield from add_2streams(add_2streams(scale_streams(s1, v0), scale_streams(s0, v1)), multiply_series(s0, s1))
 
 
 def inverted_unit_series(s: Iterator[float]) -> Iterator[float]:

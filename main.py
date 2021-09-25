@@ -51,11 +51,12 @@ def main() -> None:
     print(f"exercise 3.59b: (exp-series) = {list(islice(exponential(), 10))}")
     print(f"exercise 3.59b: (sine-series) = {list(islice(sine(), 10))}")
     print(f"exercise 3.59b: (cosine-series) = {list(islice(cosine(), 10))}")
-
+    print(f"exercise 3.60: (cos^2) ="
+          f" {list(islice(multiply_series(cosine(), cosine()), 3))}")
     print(f"exercise 3.60: (sin^2 + cos^2) ="
           f" {list(islice(add_series(multiply_series(cosine(), cosine()), multiply_series(sine(), sine())), 10))}")
 
-    print(f"exercise 3.61: (secant-series) = {list(islice(inverted_unit_series(chain([1.0, -1.0], repeat(0.0))), 3))}")
+    print(f"exercise 3.61: 1/(1-x) = {list(islice(inverted_unit_series(chain([1.0, -1.0], repeat(0.0))), 5))}")
     # print(f"exercise 3.61: (secant-series) = {list(islice(inverted_unit_series(cosine()), 5))}")
     # print(f"exercise 3.61: (tangent-series) = {list(islice(tangent(), 2))}")
 
