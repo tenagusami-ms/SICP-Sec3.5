@@ -17,13 +17,13 @@ class MemoizedInfiniteSequence(Generic[T]):
     """
     メモ化された無限リスト
     """
-    values: list[T]
     iterator: Iterator[T]
+    memo: list[T] = dataclasses.field(default_factory=list)
 
     def value(self, index: int) -> T:
-        if index < len(self.values):
-            return self.values[index]
-        self.values += list(islice(self.iterator, index - len(self.values) + 1))
+        if index < len(self.memo):
+            return self.memo[index]
+        self.memo += list(islice(self.iterator, index - len(self.memo) + 1))
         return self.value(index)
 
 
@@ -43,8 +43,21 @@ class Stream(Generic[T]):
         self.current_index += 1
         return current_value
 
+    def nth(self, n: int) -> T:
+        """
+        nth value
+        """
+        return self.values.value(n)
 
-def integers_starting_from(n: int) -> Iterator[int]:
+
+def make_stream(iterator: Iterator[T]) -> Stream[T]:
+    """
+    generate stream
+    """
+    return Stream(values=MemoizedInfiniteSequence(iterator=iterator))
+
+
+def integers_starting_from(n: int) -> Stream[int]:
     """
     infinite stream of numbers from
     Args:
@@ -52,16 +65,16 @@ def integers_starting_from(n: int) -> Iterator[int]:
     Returns:
         infinite stream(Generator[int, None, Any])
     """
-    return count(n)
+    return make_stream(count(n))
 
 
-def integers() -> Iterator[int]:
+def integers() -> Stream[int]:
     """
     integers
     Returns:
         infinite stream of integers
     """
-    return count()
+    return make_stream(count())
 
 
 def is_divisible(m: int, n: int) -> bool:
@@ -76,28 +89,11 @@ def is_divisible(m: int, n: int) -> bool:
     return m % n == 0
 
 
-def stream_reference(stream: Iterable[T], nth: int) -> T:
+def stream_reference(stream: Stream[T], n: int) -> T:
     """
     nth element of stream
-    Args:
-        stream:
-        nth:
-
-    Returns:
-        element(T)
     """
-    def index_predicate(indexed_element: tuple[int, Any]):
-        """
-        index predicate
-        Args:
-            indexed_element(tuple[int, Any]): indexed
-        Returns:
-
-        """
-        index, _ = indexed_element
-        return index < nth + 1
-
-    return list(takewhile(index_predicate, enumerate(stream)))[-1][1]
+    return stream.nth(n)
 
 
 def fibonacci_generator(a: int, b: int) -> Generator[int, None, Any]:
@@ -113,7 +109,7 @@ def fibonacci_generator(a: int, b: int) -> Generator[int, None, Any]:
     yield from fibonacci_generator(b, a + b)
 
 
-def eratosthenes_sieve(stream: Iterable[int]) -> Generator[int, None, Any]:
+def eratosthenes_sieve(stream: Iterator[int]) -> Stream[int]:
     """
     Eratosthenes' sieve
     Returns:
@@ -121,23 +117,19 @@ def eratosthenes_sieve(stream: Iterable[int]) -> Generator[int, None, Any]:
     """
     p: int = next(iter(stream))
     yield p
-    yield from eratosthenes_sieve(s for s in stream if not is_divisible(s, p))
+    yield from eratosthenes_sieve(make_stream(s for s in stream if not is_divisible(s, p)))
 
 
-def ones() -> Iterable[int]:
+def ones() -> Stream[int]:
     """
     repeat 1s
-    Returns:
-
     """
-    return repeat(1)
+    return make_stream(repeat(1))
 
 
-def integers_from_ones() -> Generator[int, None, Any]:
+def integers_from_ones() -> Stream[int]:
     """
     integers from ones
-    Returns:
-
     """
     yield 1
     yield from (one + i for one, i in zip(ones(), integers_from_ones()))

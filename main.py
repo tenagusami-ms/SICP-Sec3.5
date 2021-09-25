@@ -9,7 +9,7 @@ from typing import Sequence, Generator, Any
 from modules.Math import is_prime
 from modules.Stream import integers_starting_from, integers, is_divisible, stream_reference, fibonacci_generator, \
     eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, factorial, partial_sums, humming_stream, expand, \
-    exponential, sine, cosine, multiply_series, add_series, tangent, inverted_unit_series
+    exponential, sine, cosine, multiply_series, add_series, tangent, inverted_unit_series, make_stream, Stream
 
 
 def main() -> None:
@@ -23,12 +23,12 @@ def main() -> None:
 
     print(list(takewhile(lambda x: x < 30, integers_starting_from(10))))
 
-    print(stream_reference((n for n in integers() if not is_divisible(n, 7)), 100))
+    print(stream_reference(make_stream((n for n in integers() if not is_divisible(n, 7))), 100))
 
     print(list(takewhile(lambda x: x < 100, fibonacci_generator(0, 1))))
 
-    primes: Generator[int, None, Any] = eratosthenes_sieve(integers_starting_from(2))
-    print(stream_reference(primes, 50))
+    primes: Sequence[int] = list(islice(eratosthenes_sieve(integers_starting_from(2)), 50))
+    print(primes[-1])
 
     integers2: Generator[int, None, Any] = integers_from_ones()
     print(list(takewhile(lambda x: x < 20, integers2)))
@@ -56,7 +56,7 @@ def main() -> None:
     print(f"exercise 3.60: (sin^2 + cos^2) ="
           f" {list(islice(add_series(multiply_series(cosine(), cosine()), multiply_series(sine(), sine())), 10))}")
 
-    print(f"exercise 3.61: 1/(1-x) = {list(islice(inverted_unit_series(chain([1.0, -1.0], repeat(0.0))), 5))}")
+    # print(f"exercise 3.61: 1/(1-x) = {list(islice(inverted_unit_series(chain([1.0, -1.0], repeat(0.0))), 5))}")
     # print(f"exercise 3.61: (secant-series) = {list(islice(inverted_unit_series(cosine()), 5))}")
     # print(f"exercise 3.61: (tangent-series) = {list(islice(tangent(), 2))}")
 
