@@ -21,23 +21,24 @@ def main() -> None:
     primes: Sequence[int] = [m for m in range(max_number) if is_prime(m, precision)]
     print(primes)
 
-    print(list(takewhile(lambda x: x < 30, integers_starting_from(10))))
+    print(f"(integers-starting-from 10) = {list(takewhile(lambda x: x < 30, integers_starting_from(10)))}")
 
-    print(stream_reference(make_stream((n for n in integers() if not is_divisible(n, 7))), 100))
+    print(f"(stream-ref no-sevens 100) ="
+          f" {stream_reference(make_stream((n for n in integers() if not is_divisible(n, 7))), 100)}")
 
-    print(list(takewhile(lambda x: x < 100, fibonacci_generator(0, 1))))
+    print(f"(fibs) = {list(takewhile(lambda x: x < 100, fibonacci_generator(0, 1)))}")
 
     primes: Sequence[int] = list(islice(eratosthenes_sieve(integers_starting_from(2)), 50))
-    print(primes[-1])
+    print(f"(stream-ref primes 50) = {primes[-1]}")
 
-    integers2: Generator[int, None, Any] = integers_from_ones()
-    print(list(takewhile(lambda x: x < 20, integers2)))
+    integers2: Stream[int] = integers_from_ones()
+    print(f"(integers-with-add) = {list(takewhile(lambda x: x < 20, integers2))}")
 
     fibonacci2: Generator[int, None, Any] = fibonacci_adding()
-    print(list(takewhile(lambda x: x < 100, fibonacci2)))
+    print(f"(fibonacci-with-add) = {list(takewhile(lambda x: x < 100, fibonacci2))}")
 
     doubles: Generator[int, None, Any] = double()
-    print(list(takewhile(lambda x: x < 100, doubles)))
+    print(f"(double) = {list(takewhile(lambda x: x < 100, doubles))}")
 
     print(f"exercise 3.54: factorial = {list(takewhile(lambda x: x < 1000, factorial()))}")
 

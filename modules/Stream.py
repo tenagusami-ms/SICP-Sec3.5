@@ -20,7 +20,18 @@ class MemoizedInfiniteSequence(Generic[T]):
     iterator: Iterator[T]
     memo: list[T] = dataclasses.field(default_factory=list)
 
+    def __getitem__(self, item):
+        return self.value(item)
+
     def value(self, index: int) -> T:
+        """
+        インデックスに対する値
+        Args:
+            index:
+
+        Returns:
+
+        """
         if index < len(self.memo):
             return self.memo[index]
         self.memo += list(islice(self.iterator, index - len(self.memo) + 1))
@@ -54,6 +65,8 @@ def make_stream(iterator: Iterator[T]) -> Stream[T]:
     """
     generate stream
     """
+    if isinstance(iterator, Stream):
+        return iterator
     return Stream(values=MemoizedInfiniteSequence(iterator=iterator))
 
 
@@ -132,7 +145,7 @@ def integers_from_ones() -> Stream[int]:
     integers from ones
     """
     yield 1
-    yield from (one + i for one, i in zip(ones(), integers_from_ones()))
+    yield from make_stream(one + i for one, i in zip(ones(), integers_from_ones()))
 
 
 def fibonacci_adding() -> Generator[int, None, Any]:
@@ -145,7 +158,7 @@ def fibonacci_adding() -> Generator[int, None, Any]:
     yield 1
     fib1 = fibonacci_adding()
     next(iter(fib1))
-    yield from (f2 + f1 for f2, f1 in zip(fibonacci_adding(), fib1))
+    yield from make_stream(f2 + f1 for f2, f1 in zip(fibonacci_adding(), fib1))
 
 
 def double() -> Generator[int, None, Any]:
@@ -155,23 +168,23 @@ def double() -> Generator[int, None, Any]:
 
     """
     yield 1
-    yield from (2 * i for i in double())
+    yield from make_stream(2 * i for i in double())
 
 
-def multiply_streams(s1: Iterable[T], s2: Iterable[T]) -> Iterator[T]:
+def multiply_streams(s1: Iterator[T], s2: Iterator[T]) -> Iterator[T]:
     """
     exercise 3.54-1
     """
     yield next(iter(s1)) * next(iter(s2))
-    yield from multiply_streams(s1, s2)
+    yield from multiply_streams(make_stream(s1), make_stream(s2))
 
 
-def add_2streams(s1: Iterable[T], s2: Iterable[T]) -> Iterator[T]:
+def add_2streams(s1: Iterator[T], s2: Iterator[T]) -> Iterator[T]:
     """
     exercise 3.54-1
     """
     yield next(iter(s1)) + next(iter(s2))
-    yield from add_2streams(s1, s2)
+    yield from add_2streams(make_stream(s1), make_stream(s2))
 
 
 def add_streams(*streams) -> Iterator[T]:
@@ -203,7 +216,7 @@ def scale_streams(s: Iterator[T], factor: T) -> Iterator[T]:
     scale streams
     """
     yield next(iter(s)) * factor
-    yield from scale_streams(s, factor)
+    yield from scale_streams(make_stream(s), factor)
 
 
 def merge(s1: Iterator[int], s2: Iterator[int]) -> Iterator[int]:
@@ -299,7 +312,9 @@ def multiply_series(s0: Iterator[float], s1: Iterator[float]) -> Iterator[float]
     v0: float = next(iter(s0))
     v1: float = next(iter(s1))
     yield v0 * v1
-    yield from add_2streams(add_2streams(scale_streams(s1, v0), scale_streams(s0, v1)), multiply_series(s0, s1))
+    yield from add_2streams(add_2streams(scale_streams(make_stream(s1), v0),
+                                         scale_streams(make_stream(s0), v1)),
+                            multiply_series(make_stream(s0), make_stream(s1)))
 
 
 def inverted_unit_series(s: Iterator[float]) -> Iterator[float]:
