@@ -3,6 +3,7 @@ stream module
 """
 from __future__ import annotations
 
+import copy
 import dataclasses
 import sys
 from itertools import count, takewhile, repeat, accumulate, chain, islice
@@ -68,6 +69,13 @@ def make_stream(iterator: Iterator[T]) -> Stream[T]:
     if isinstance(iterator, Stream):
         return iterator
     return Stream(values=MemoizedInfiniteSequence(iterator=iterator))
+
+
+def copy_stream(s: Stream) -> Stream:
+    """
+    copy a stream
+    """
+    return copy.copy(s)
 
 
 def integers_starting_from(n: int) -> Stream[int]:

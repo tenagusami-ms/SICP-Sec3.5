@@ -3,7 +3,7 @@ main module
 """
 from __future__ import annotations
 
-from itertools import takewhile, islice, repeat, chain
+from itertools import takewhile, islice
 from typing import Sequence, Generator, Any
 
 from modules.Math import is_prime
@@ -19,7 +19,7 @@ def main() -> None:
     precision: int = 4
     max_number: int = 100
     primes: Sequence[int] = [m for m in range(max_number) if is_prime(m, precision)]
-    print(primes)
+    print(f"(primes) = {primes}")
 
     print(f"(integers-starting-from 10) = {list(takewhile(lambda x: x < 30, integers_starting_from(10)))}")
 
@@ -54,8 +54,8 @@ def main() -> None:
     print(f"exercise 3.59b: (cosine-series) = {list(islice(cosine(), 10))}")
     print(f"exercise 3.60: (cos^2) ="
           f" {list(islice(multiply_series(cosine(), cosine()), 3))}")
-    print(f"exercise 3.60: (sin^2 + cos^2) ="
-          f" {list(islice(add_series(multiply_series(cosine(), cosine()), multiply_series(sine(), sine())), 10))}")
+    # print(f"exercise 3.60: (sin^2 + cos^2) ="
+    #       f" {list(islice(add_series(multiply_series(cosine(), cosine()), multiply_series(sine(), sine())), 10))}")
 
     # print(f"exercise 3.61: 1/(1-x) = {list(islice(inverted_unit_series(chain([1.0, -1.0], repeat(0.0))), 5))}")
     # print(f"exercise 3.61: (secant-series) = {list(islice(inverted_unit_series(cosine()), 5))}")

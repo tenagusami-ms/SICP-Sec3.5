@@ -93,12 +93,6 @@ def is_prime(n, k):
     input parameter that determines
     accuracy level. Higher value of
     k indicates more accuracy.
-    Args:
-        n:
-        k:
-
-    Returns:
-
     """
 
     # Corner cases
