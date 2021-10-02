@@ -7,7 +7,7 @@ import dataclasses
 from itertools import chain
 from typing import TypeVar, Iterator, Generic
 
-from modules.Stream import make_stream, Stream, copy_stream
+from modules.Stream import make_stream, Stream
 
 T = TypeVar("T")
 

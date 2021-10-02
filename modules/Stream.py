@@ -77,7 +77,7 @@ class Stream(Generic[T]):
         """
         from start
         """
-        return Stream(values=self.values, current_index=0)
+        return Stream(values=self.values)
 
 
 def make_stream(iterator: Iterator[T], initial_index=0) -> Stream[T]:

@@ -3,7 +3,7 @@ main module
 """
 from __future__ import annotations
 
-from itertools import takewhile, islice, chain, repeat
+from itertools import takewhile, islice
 
 from modules.Math import is_divisible
 from modules.Series import exponential, sine, cosine, inverted_unit_series, make_series
