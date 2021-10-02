@@ -58,7 +58,7 @@ class Stream(Generic[T]):
 
     def __mul__(self, other) -> Stream[T]:
         if isinstance(other, self.__class__):
-            return make_stream(multiply_streams(self, other))
+            return multiply_2streams(self, other)
         return scale_streams(self, other)
 
     def __add__(self, other) -> Stream[T]:
@@ -272,7 +272,7 @@ def factorial() -> Stream[int]:
     return make_stream(factorial_generator())
 
 
-def partial_sums(s: Stream[int]) -> Stream[int]:
+def partial_sums(s: Stream[T]) -> Stream[T]:
     """
     exercise 3.55
     """
@@ -344,3 +344,43 @@ def expand(numerator: int, denominator: int, radix: int) -> Iterator[int]:
     """
     yield (numerator * radix) // denominator
     yield from expand((numerator * radix) % denominator, denominator, radix)
+
+
+def sqrt_improve(guess: float, x: float) -> float:
+    """
+    Sec 3.5.3 sqrt-improve
+    """
+    return (guess + x / guess) / 2.0
+
+
+def sqrt_stream(x: float) -> Stream[float]:
+    """
+    sec 3.5.3 sqrt-stream
+    """
+    def guess_generator() -> Iterator[float]:
+        """
+        guesses
+        """
+        yield 1.0
+        yield from (sqrt_improve(guess, x) for guess in guess_generator())
+    return make_stream(guess_generator())
+
+
+def pi_summands(n: float) -> Stream[float]:
+    """
+    sec 3.5.3 pi-summands
+    """
+    def pi_generator() -> Iterator[float]:
+        """
+        pi
+        """
+        yield 1.0 / n
+        yield from (-n_inverse for n_inverse in pi_summands(n + 2.0))
+    return make_stream(pi_generator())
+
+
+def pi_stream() -> Stream[float]:
+    """
+    sec 3.5.3 pi-stream
+    """
+    return partial_sums(pi_summands(1.0)) * 4.0

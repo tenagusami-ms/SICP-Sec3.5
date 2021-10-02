@@ -10,7 +10,7 @@ from modules.Series import exponential, sine, cosine, inverted_unit_series, make
     Series, secant
 from modules.Stream import integers_starting_from, integers, stream_reference, fibonacci_generator, \
     eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, factorial, partial_sums, humming_stream, \
-    make_stream, Stream, expand
+    make_stream, Stream, expand, sqrt_stream, pi_stream
 
 
 def main() -> None:
@@ -21,7 +21,7 @@ def main() -> None:
     # max_number: int = 100
     # primes: Sequence[int] = [m for m in range(max_number) if is_prime(m, precision)]
     # print(f"(primes) = {primes}")
-
+    print("----------\nSec 3.5.2\n----------")
     print(f"(integers-starting-from 10) = {list(takewhile(lambda x: x < 30, integers_starting_from(10)))}")
 
     print(f"(stream-ref no-sevens 100) ="
@@ -63,6 +63,12 @@ def main() -> None:
     print(f"(secant-series) = {list(islice(secant(), 10))}")
     print(f"exercise 3.61: (tangent-series) = {list(islice(tangent(), 10))}")
     print(f"exercise 3.61: 1 + tan^2 - sec^2 = {list(islice(constant_series(1.0) + tangent() * tangent() - secant() * secant(), 10))}")
+
+    print("----------\nSec 3.5.3\n----------")
+    print(f"(sqrt-stream 2) = "
+          f"{list(islice(sqrt_stream(2.0), 10))}")
+    print(f"(pi-stream) = "
+          f"{list(islice(pi_stream(), 10))}")
 
 
 if __name__ == '__main__':
