@@ -6,7 +6,7 @@ from __future__ import annotations
 import dataclasses
 import sys
 from itertools import count, repeat, accumulate, chain, islice
-from typing import TypeVar, Iterator, Generic
+from typing import TypeVar, Iterator, Generic, Callable
 
 from modules.Math import is_divisible
 
@@ -384,3 +384,44 @@ def pi_stream() -> Stream[float]:
     sec 3.5.3 pi-stream
     """
     return partial_sums(pi_summands(1.0)) * 4.0
+
+
+def euler_transform(s: Stream[T]) -> Stream[T]:
+    """
+    sec 3.5.3 Euler transformation
+    """
+    def euler_generator() -> Iterator[T]:
+        """
+        euler generator
+        """
+        s0: T = next(s)
+        s1: T = next(s)
+        s2: T = next(s)
+        yield s2 - (s2 - s1) * (s2 - s1) / (s0 - 2.0 * s1 + s2)
+        yield from euler_transform(make_stream(chain([s1, s2], s)))
+    return make_stream(euler_generator())
+
+
+def make_tableau(transform: Callable[[Stream[T]], Stream[T]], s: Stream[T]) -> Stream[T]:
+    """
+    sec 3.5.3 tableau
+    """
+    def tableau_generator() -> Iterator[Stream[T]]:
+        """
+        tableau generator
+        """
+        yield s
+        yield from make_tableau(transform, transform(s))
+    return make_stream(tableau_generator())
+
+
+def accelerated_sequence(transform: Callable[[Stream[T]], Stream[T]], s: Stream[T]) -> Stream[T]:
+    """
+    sec 3.5.3 accelerated-sequence
+    """
+    def accelerated_generator() -> Iterator[T]:
+        """
+        generator
+        """
+        yield from (next(transformed) for transformed in make_tableau(transform, s))
+    return make_stream(accelerated_generator())
