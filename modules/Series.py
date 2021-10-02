@@ -7,7 +7,7 @@ import dataclasses
 from itertools import chain
 from typing import TypeVar, Iterator, Generic
 
-from modules.Stream import add_streams, make_stream, Stream, copy_stream
+from modules.Stream import make_stream, Stream, copy_stream
 
 T = TypeVar("T")
 
@@ -23,7 +23,10 @@ class Series(Generic[T]):
         return self
 
     def __next__(self):
-        return next(self.coefficients)
+        try:
+            return next(self.coefficients)
+        except StopIteration:
+            return 0.0
 
     def __mul__(self, other) -> Series[T]:
         if isinstance(other, self.__class__):
@@ -40,6 +43,13 @@ class Series(Generic[T]):
         nth value
         """
         return self.coefficients.nth(n)
+
+    @property
+    def from_0th(self) -> Series[T]:
+        """
+        from 0th order term
+        """
+        return make_series(self.coefficients.rewound)
 
 
 def make_series(coefficient_stream: Stream[T]) -> Series[T]:
@@ -134,13 +144,11 @@ def multiply_2series(s0: Series[float], s1: Series[float]) -> Series[float]:
         """
         multiplication
         """
-        v0: float = next(iter(c0))
-        v1: float = next(iter(c1))
-        yield v0 * v1
-        yield from c1 * v0 + c0 * v1 + copy_stream(c0) * copy_stream(c1)
+        v0: float = next(iter(s0))
+        s1v0: Series[float] = s1 * v0
+        yield next(iter(s1v0))
+        yield from s1v0 + s0 * s1.from_0th
 
-    c0: Stream[float] = s0.coefficients
-    c1: Stream[float] = s1.coefficients
     return make_series(make_stream(multiply_generator()))
 
 
@@ -153,29 +161,34 @@ def multiply_series(*series) -> Series[T]:
     return multiply_2series(series[0], multiply_series(*series[1:]))
 
 
-def inverted_unit_series(s: Iterator[float]) -> Iterator[float]:
+def inverted_unit_series(s: Series[float]) -> Series[float]:
     """
     exercise 3.61-1
     """
-    first: float = next(iter(s))
-    yield first
-    yield from multiply_2series(negate_series(s), inverted_unit_series(chain([first], s)))
+    def inversion_generator() -> Iterator[float]:
+        """
+        inversion
+        """
+        first: float = next(iter(s))
+        yield first
+        yield from negate_series(s) * inverted_unit_series(make_series(make_stream(chain([first], s.coefficients))))
+    return make_series(make_stream(inversion_generator()))
 
 
-def divide_series(numerator: Iterator[float], denominator: Iterator[float]) -> Iterator[float]:
-    """
-    exercise 3.61-2
-    """
-    denominator_first_coefficient: float = next(iter(denominator))
-    if denominator_first_coefficient == 0.0:
-        raise ValueError("division must be done by the series with non-zero 0th-order term.")
-    yield from multiply_2series(
-        numerator * (1.0 / denominator_first_coefficient),
-        inverted_unit_series(chain([1.0], denominator * 1.0 / denominator_first_coefficient)))
-
-
-def tangent() -> Iterator[float]:
-    """
-    exercise 3.61-3
-    """
-    yield from divide_series(sine(), cosine())
+# def divide_series(numerator: Iterator[float], denominator: Iterator[float]) -> Iterator[float]:
+#     """
+#     exercise 3.61-2
+#     """
+#     denominator_first_coefficient: float = next(iter(denominator))
+#     if denominator_first_coefficient == 0.0:
+#         raise ValueError("division must be done by the series with non-zero 0th-order term.")
+#     yield from multiply_2series(
+#         numerator * (1.0 / denominator_first_coefficient),
+#         inverted_unit_series(chain([1.0], denominator * 1.0 / denominator_first_coefficient)))
+#
+#
+# def tangent() -> Iterator[float]:
+#     """
+#     exercise 3.61-3
+#     """
+#     yield from divide_series(sine(), cosine())

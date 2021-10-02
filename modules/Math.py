@@ -113,3 +113,15 @@ def is_prime(n, k):
             return False
 
     return True
+
+
+def is_divisible(m: int, n: int) -> bool:
+    """
+    predicate to be divisible
+    Args:
+        m: dividend
+        n: divisor
+    Returns:
+        True if divisible
+    """
+    return m % n == 0

@@ -3,11 +3,12 @@ stream module
 """
 from __future__ import annotations
 
-import copy
 import dataclasses
 import sys
 from itertools import count, repeat, accumulate, chain, islice
-from typing import TypeVar, Iterator, Callable, Generic
+from typing import TypeVar, Iterator, Generic
+
+from modules.Math import is_divisible
 
 T = TypeVar("T")
 sys.setrecursionlimit(1000)
@@ -71,6 +72,13 @@ class Stream(Generic[T]):
         """
         return self.values[n]
 
+    @property
+    def rewound(self) -> Stream:
+        """
+        from start
+        """
+        return Stream(values=self.values, current_index=0)
+
 
 def make_stream(iterator: Iterator[T], initial_index=0) -> Stream[T]:
     """
@@ -107,18 +115,6 @@ def integers() -> Stream[int]:
         infinite stream of integers
     """
     return make_stream(count())
-
-
-def is_divisible(m: int, n: int) -> bool:
-    """
-    predicate to be divisible
-    Args:
-        m: dividend
-        n: divisor
-    Returns:
-        True if divisible
-    """
-    return m % n == 0
 
 
 def stream_reference(stream: Stream[T], n: int) -> T:

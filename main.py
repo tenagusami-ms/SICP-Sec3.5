@@ -3,12 +3,13 @@ main module
 """
 from __future__ import annotations
 
-from itertools import takewhile, islice
+from itertools import takewhile, islice, chain, repeat
 
-from modules.Series import exponential, sine, cosine, multiply_2series, add_series, multiply_series
-from modules.Stream import integers_starting_from, integers, is_divisible, stream_reference, fibonacci_generator, \
+from modules.Math import is_divisible
+from modules.Series import exponential, sine, cosine, inverted_unit_series, make_series
+from modules.Stream import integers_starting_from, integers, stream_reference, fibonacci_generator, \
     eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, factorial, partial_sums, humming_stream, \
-    make_stream, Stream, scale_streams, expand
+    make_stream, Stream, expand
 
 
 def main() -> None:
@@ -52,11 +53,12 @@ def main() -> None:
     print(f"exercise 3.59b: (sine-series) = {list(islice(sine(), 10))}")
     print(f"exercise 3.59b: (cosine-series) = {list(islice(cosine(), 10))}")
     print(f"exercise 3.60: (cos^2) ="
-          f" {list(islice(multiply_2series(cosine(), cosine()), 10))}")
+          f" {list(islice(cosine() * cosine(), 10))}")
     print(f"exercise 3.60: (sin^2 + cos^2) ="
-          f" {list(islice(add_series(multiply_series(cosine(), cosine()), multiply_series(sine(), sine())), 10))}")
+          f" {list(islice(cosine() * cosine() + sine() * sine(), 10))}")
 
-    # print(f"exercise 3.61: 1/(1-x) = {list(islice(inverted_unit_series(chain([1.0, -1.0], repeat(0.0))), 5))}")
+    print(f"exercise 3.61: 1/(1-x) ="
+          f" {list(islice(inverted_unit_series(make_series(make_stream([1.0, -1.0]))), 5))}")
     # print(f"exercise 3.61: (secant-series) = {list(islice(inverted_unit_series(cosine()), 5))}")
     # print(f"exercise 3.61: (tangent-series) = {list(islice(tangent(), 2))}")
 
