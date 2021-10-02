@@ -3,10 +3,11 @@ main module
 """
 from __future__ import annotations
 
-from itertools import takewhile, islice
+from itertools import takewhile, islice, chain, repeat
 
 from modules.Math import is_divisible
-from modules.Series import exponential, sine, cosine, inverted_unit_series, make_series
+from modules.Series import exponential, sine, cosine, inverted_unit_series, make_series, tangent, constant_series, \
+    Series, secant
 from modules.Stream import integers_starting_from, integers, stream_reference, fibonacci_generator, \
     eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, factorial, partial_sums, humming_stream, \
     make_stream, Stream, expand
@@ -57,10 +58,11 @@ def main() -> None:
     print(f"exercise 3.60: (sin^2 + cos^2) ="
           f" {list(islice(cosine() * cosine() + sine() * sine(), 10))}")
 
-    print(f"exercise 3.61: 1/(1-x) ="
-          f" {list(islice(inverted_unit_series(make_series(make_stream([1.0, -1.0]))), 5))}")
-    # print(f"exercise 3.61: (secant-series) = {list(islice(inverted_unit_series(cosine()), 5))}")
-    # print(f"exercise 3.61: (tangent-series) = {list(islice(tangent(), 2))}")
+    print(f"1/(1-x) ="
+          f" {list(islice(inverted_unit_series(make_series(make_stream(chain([1.0, -1.0], repeat(0.0))))), 10))}")
+    print(f"(secant-series) = {list(islice(secant(), 10))}")
+    print(f"exercise 3.61: (tangent-series) = {list(islice(tangent(), 10))}")
+    print(f"exercise 3.61: 1 + tan^2 - sec^2 = {list(islice(constant_series(1.0) + tangent() * tangent() - secant() * secant(), 10))}")
 
 
 if __name__ == '__main__':

@@ -66,6 +66,14 @@ class Stream(Generic[T]):
             raise NotImplementedError()
         return add_2streams(self, other)
 
+    def __neg__(self) -> Stream[T]:
+        return make_stream((-v for v in self.values), initial_index=self.current_index)
+
+    def __sub__(self, other) -> Stream[T]:
+        if not isinstance(other, self.__class__):
+            raise NotImplementedError()
+        return self + (-other)
+
     def nth(self, n: int) -> T:
         """
         nth value
