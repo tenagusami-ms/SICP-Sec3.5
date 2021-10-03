@@ -6,11 +6,12 @@ from __future__ import annotations
 from itertools import takewhile, islice, chain, repeat
 
 from modules.Math import is_divisible
+from modules.Sequence import fibonacci_generator, eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, \
+    factorial, humming_stream, expand, sqrt_stream, pi_stream, euler_transform, accelerated_sequence
 from modules.Series import exponential, sine, cosine, inverted_unit_series, make_series, tangent, constant_series, \
     secant
-from modules.Stream import integers_starting_from, integers, stream_reference, fibonacci_generator, \
-    eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, factorial, partial_sums, humming_stream, \
-    make_stream, Stream, expand, sqrt_stream, pi_stream, euler_transform, accelerated_sequence
+from modules.Stream import integers_starting_from, integers, stream_reference, partial_sums, \
+    make_stream, Stream
 
 
 def main() -> None:
@@ -73,7 +74,7 @@ def main() -> None:
     print(f"(euler-transform pi-stream) = "
           f"{list(islice(euler_transform(pi_stream()), 10))}")
     print(f"(accelerated-sequence euler-transform pi-stream) = "
-          f"{list(islice(accelerated_sequence(euler_transform, pi_stream()), 10))}")
+          f"{list(islice(accelerated_sequence(euler_transform, pi_stream()), 9))}")
 
 
 if __name__ == '__main__':
