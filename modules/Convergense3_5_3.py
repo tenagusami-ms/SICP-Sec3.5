@@ -90,3 +90,23 @@ def accelerated_sequence(transform: Callable[[Stream[T]], Stream[T]], s: Stream[
         """
         yield from (next(transformed) for transformed in make_tableau(transform, s))
     return make_stream(accelerated_generator())
+
+
+def ln2_summands(n: float) -> Stream[float]:
+    """
+    exercise 3.65
+    """
+    def ln2_generator() -> Iterator[float]:
+        """
+        ln2
+        """
+        yield 1.0 / n
+        yield from (-n_inverse for n_inverse in ln2_summands(n + 1.0))
+    return make_stream(ln2_generator())
+
+
+def ln2_stream() -> Stream[float]:
+    """
+    exercise 3.65
+    """
+    return partial_sums(ln2_summands(1.0))

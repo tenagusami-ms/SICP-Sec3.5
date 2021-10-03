@@ -7,7 +7,9 @@ import dataclasses
 from itertools import count, accumulate, chain, islice
 from typing import TypeVar, Iterator, Generic
 
+S = TypeVar("S")
 T = TypeVar("T")
+U = TypeVar("U")
 
 
 @dataclasses.dataclass
@@ -27,7 +29,10 @@ class MemoizedInfiniteSequence(Generic[T]):
         """
         if index < len(self.__memo):
             return self.__memo[index]
-        self.__memo += list(islice(self._iterator, index - len(self.__memo) + 1))
+        try:
+            self.__memo += list(islice(self._iterator, index - len(self.__memo) + 1))
+        except (StopIteration, RuntimeError):
+            raise StopIteration
         return self.value(index)
 
 
@@ -43,9 +48,12 @@ class Stream(Generic[T]):
         return self
 
     def __next__(self):
-        current_value: T = self.values.value(self._current_index)
-        self._current_index += 1
-        return current_value
+        try:
+            current_value: T = self.values.value(self._current_index)
+            self._current_index += 1
+            return current_value
+        except StopIteration:
+            raise StopIteration
 
     def __mul__(self, other) -> Stream[T]:
         if isinstance(other, self.__class__):
@@ -90,9 +98,9 @@ class Stream(Generic[T]):
         """
         2nd latest value
         """
-        if self._current_index == 0:
+        if self._current_index < 2:
             return self.values[0]
-        return self.nth(self._current_index - 1)
+        return self.nth(self._current_index - 2)
 
 
 def make_stream(iterator: Iterator[T], initial_index=0) -> Stream[T]:
@@ -105,7 +113,7 @@ def make_stream(iterator: Iterator[T], initial_index=0) -> Stream[T]:
                   _current_index=initial_index)
 
 
-def copy_stream(s: Stream) -> Stream:
+def copy_stream(s: Stream[T]) -> Stream[T]:
     """
     copy a stream
     """
@@ -234,3 +242,84 @@ def integers() -> Stream[int]:
         infinite stream of integers starting from 0
     """
     return integers_starting_from(0)
+
+
+def stream_limit(stream: Stream[T], tolerance: T) -> Stream[T]:
+    """
+    exercise 3.64
+    """
+    def limited() -> Iterator[T]:
+        """
+        limited stream
+        """
+        yield next(stream)
+        for value in stream:
+            if abs(value - stream.second_latest) < tolerance:
+                raise StopIteration
+            yield value
+    return list(make_stream(limited()))[-1]
+
+
+def interleave(s1: Stream[T], s2: Stream[T]) -> Stream[T]:
+    """
+    sec 3.5.3 interleave
+    """
+    def interleave_generator() -> Iterator[T]:
+        """
+        interleave generator
+        """
+        yield next(s1)
+        yield from interleave(s2, s1)
+    return make_stream(interleave_generator())
+
+
+def pairs(s: Stream[S], t: Stream[T]) -> Stream[tuple[S, T]]:
+    """
+    sec 3.5.3 pairs
+    """
+    def pairs_generator() -> Iterator[tuple[S, T]]:
+        """
+        pair generator
+        """
+        s0: S = next(s)
+        t0: T = next(t)
+        yield s0, t0
+        yield from interleave(make_stream((s0, t1) for t1 in copy_stream(t)),
+                              pairs(s, t))
+    return make_stream(pairs_generator())
+
+
+def pairs_all(s: Stream, t: Stream[T]) -> Stream[tuple[T, T]]:
+    """
+    sec 3.5.3 pairs
+    """
+    def pairs_generator() -> Iterator[tuple[T, T]]:
+        """
+        pair generator
+        """
+        s0 = next(s)
+        t0: T = next(t)
+        yield s0, t0
+        if s0 != t0:
+            yield t0, s0
+        yield from interleave(make_stream((s0, t1) for t1 in copy_stream(t)),
+                              interleave(make_stream((t1, s0) for t1 in copy_stream(t) if t1 != s0),
+                                         pairs_all(s, t)))
+    return make_stream(pairs_generator())
+
+
+def triples(s: Stream[S], t: Stream[T], u: Stream[U]) -> Stream[tuple[S, T, U]]:
+    """
+    exercise 3.69 triples
+    """
+    def triples_generator() -> Iterator[tuple[S, T, U]]:
+        """
+        pair generator
+        """
+        s0, t0 = next(pairs_st)
+        u0: U = next(u)
+        yield s0, t0, u0
+        yield from ((s2, t2, u2) for (s2, t2), u2 in interleave(make_stream(((s0, t0), u1) for u1 in copy_stream(u)),
+                                                                pairs(pairs_st, u)))
+    pairs_st: Stream[tuple[S, T]] = pairs(s, t)
+    return make_stream(triples_generator())

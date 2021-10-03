@@ -4,15 +4,16 @@ main module
 from __future__ import annotations
 
 from itertools import takewhile, islice, chain, repeat
+from math import log
 
-from modules.Convergense3_5_3 import sqrt_stream, pi_stream, euler_transform, accelerated_sequence
+from modules.Convergense3_5_3 import sqrt_stream, pi_stream, euler_transform, accelerated_sequence, ln2_stream
 from modules.Math import is_divisible
 from modules.Sequence import fibonacci_generator, eratosthenes_sieve, integers_from_ones, fibonacci_adding, double, \
-    factorial, humming_stream, expand
+    factorial, humming_stream, expand, pythagorean_triples
 from modules.Series import exponential, sine, cosine, inverted_unit_series, make_series, tangent, constant_series, \
     secant
 from modules.Stream import integers_starting_from, integers, stream_reference, partial_sums, \
-    make_stream, Stream
+    make_stream, Stream, stream_limit, pairs, pairs_all, triples
 
 
 def main() -> None:
@@ -73,7 +74,17 @@ def main() -> None:
     print(f"(euler-transform pi-stream) = {list(islice(euler_transform(pi_stream()), 10))}")
     print(f"(accelerated-sequence euler-transform pi-stream) = "
           f"{list(islice(accelerated_sequence(euler_transform, pi_stream()), 9))}")
-
+    print(f"exercise 3.64 (sqrt 2 1.0e-8) = {stream_limit(sqrt_stream(2.0), 1.0e-8)}")
+    print(f"exercise 3.65 (accelerated-sequence euler-transform ln2-stream) = "
+          f"{list(islice(accelerated_sequence(euler_transform, ln2_stream()), 8))}"
+          f" (= {log(2.0)})")
+    print(f"exercise 3.66 (pairs integers integers) = {list(islice(pairs(integers(), integers()), 10))}")
+    print(f"exercise 3.67 (pairs-all integers integers) = {list(islice(pairs_all(integers(), integers()), 10))}")
+    print(f"exercise 3.69 (triples integers integers integers) ="
+          f" {list(islice(triples(integers(), integers(), integers()), 10))}")
+    # print(f"exercise 3.69 (pythagorean-triples)="
+    #      f" {list(islice(pythagorean_triples(), 1))}")
+        
 
 if __name__ == '__main__':
     main()

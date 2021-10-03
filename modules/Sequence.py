@@ -7,7 +7,7 @@ from itertools import repeat
 from typing import TypeVar, Iterator
 
 from modules.Math import is_divisible
-from modules.Stream import Stream, make_stream, integers_starting_from, merge
+from modules.Stream import Stream, make_stream, integers_starting_from, merge, triples
 
 T = TypeVar("T")
 
@@ -127,3 +127,13 @@ def expand(numerator: int, denominator: int, radix: int) -> Iterator[int]:
     """
     yield (numerator * radix) // denominator
     yield from expand((numerator * radix) % denominator, denominator, radix)
+
+
+def pythagorean_triples() -> Stream[tuple[int, int, int]]:
+    """
+    exercise 3.69: Pythagorean triples
+    """
+    return make_stream(
+        (i, j, k) for i, j, k
+        in triples(integers_starting_from(1), integers_starting_from(1), integers_starting_from(1))
+        if i * i + j * j == k * k)
